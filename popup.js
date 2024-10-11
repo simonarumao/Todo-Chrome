@@ -3,12 +3,20 @@ document.addEventListener('DOMContentLoaded', function () {
   const taskList = document.getElementById('task-list');
   const addTaskBtn = document.getElementById('add-task');
   const noTasksMessage = document.getElementById('no-tasks');
+  const deleteTime = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
   // Load tasks from local storage
   function loadTasks() {
     const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const now = new Date().getTime();
+    tasks.forEach(task => {
+      // Check if the task is completed and should be deleted
+      if (task.completed && (now - task.timestamp) > deleteTime) {
+        return; // Skip loading tasks that should be deleted
+      }
+      addTaskToUI(task.text, task.completed, task.timestamp);
+    });
     tasks.length === 0 ? showNoTasksMessage() : hideNoTasksMessage();
-    tasks.forEach(task => addTaskToUI(task.text, task.completed));
   }
 
   // Save tasks to local storage
@@ -17,7 +25,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('li').forEach(task => {
       const text = task.querySelector('.task-text').innerText;
       const completed = task.querySelector('.task-checkbox').checked;
-      tasks.push({ text, completed });
+      const timestamp = task.getAttribute('data-timestamp') || new Date().getTime();
+      tasks.push({ text, completed, timestamp });
     });
     localStorage.setItem('tasks', JSON.stringify(tasks));
     tasks.length === 0 ? showNoTasksMessage() : hideNoTasksMessage();
@@ -34,13 +43,14 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Add task to the UI
-  function addTaskToUI(taskText, completed = false) {
+  function addTaskToUI(taskText, completed = false, timestamp = new Date().getTime()) {
     const li = document.createElement('li');
     li.className = 'flex justify-between items-center p-2 mt-2 bg-white shadow-md rounded-lg';
+    li.setAttribute('data-timestamp', timestamp);
 
     // Task content (checkbox + text)
     const taskContent = document.createElement('div');
-    taskContent.className = 'flex items-center';
+    taskContent.className = 'flex items-start  w-2/3';
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -48,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
     checkbox.checked = completed;
 
     const taskSpan = document.createElement('span');
-    taskSpan.className = `task-text ${completed ? 'line-through text-gray-400' : ''}`;
+    taskSpan.className = `task-text flex-grow ${completed ? 'line-through text-gray-400' : ''}`;
     taskSpan.innerText = taskText;
 
     taskContent.appendChild(checkbox);
@@ -58,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
     checkbox.addEventListener('change', function () {
       taskSpan.classList.toggle('line-through');
       taskSpan.classList.toggle('text-gray-400');
+      li.setAttribute('data-timestamp', new Date().getTime());
       saveTasks();
     });
 
@@ -82,10 +93,14 @@ document.addEventListener('DOMContentLoaded', function () {
       saveTasks();
     });
 
-    // Append buttons and task content to list item
+    // Fixed width for buttons to keep them aligned
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'flex items-center space-x-2 w-1/3 justify-end';
+    buttonContainer.appendChild(editBtn);
+    buttonContainer.appendChild(deleteBtn);
+
     li.appendChild(taskContent);
-    li.appendChild(editBtn);
-    li.appendChild(deleteBtn);
+    li.appendChild(buttonContainer);
 
     taskList.appendChild(li);
     saveTasks();
