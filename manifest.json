@@ -1,0 +1,14 @@
+{
+    "manifest_version": 3,
+    "name": "Task Tracker",
+    "version": "1.0",
+    "description": "A simple to-do list and task tracker",
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+      "16": "check-list.png"
+      }
+    },
+    "permissions": []
+  }
+  
