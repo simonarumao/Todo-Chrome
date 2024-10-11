@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
-    checkbox.className = 'task-checkbox mr-2';
+    checkbox.className = 'task-checkbox mr-2 my-auto';
     checkbox.checked = completed;
 
     const taskSpan = document.createElement('span');
