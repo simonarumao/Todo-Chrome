@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Add task to the UI
   function addTaskToUI(taskText, completed = false, timestamp = new Date().getTime()) {
     const li = document.createElement('li');
-    li.className = 'flex justify-between items-center p-2 mt-2 bg-white shadow-md rounded-lg';
+    li.className = 'flex justify-between items-center p-3 mt-2 bg-white  rounded-lg';
     li.setAttribute('data-timestamp', timestamp);
 
     // Task content (checkbox + text)
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
     checkbox.checked = completed;
 
     const taskSpan = document.createElement('span');
-    taskSpan.className = `task-text flex-grow ${completed ? 'line-through text-gray-400' : ''}`;
+    taskSpan.className = `task-text flex items-center ${completed ? 'line-through text-gray-400' : ''}`;
     taskSpan.innerText = taskText;
 
     taskContent.appendChild(checkbox);
